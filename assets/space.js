@@ -9,6 +9,7 @@ function Star ()
     this.dy = 0;
     this.size = 1;
     this.color = '#FFFFFF';
+    this.accel = 1.02;
 }
 
 Star.prototype.init = function ()
@@ -19,16 +20,16 @@ Star.prototype.init = function ()
     this.dx = this.x / dist; // Math.random() - .5;
     this.dy = this.y / dist; // Math.random() - .5;
     this.size = .5;
-    this.color = '#'+Math.floor(Math.random()*16777215).toString(16); // beautiul random color value code from http://www.paulirish.com/2009/random-hex-color-code-snippets/
+    this.color = '#FFFFFF'; // '#'+Math.floor(Math.random()*16777215).toString(16); // beautiul random color value code from http://www.paulirish.com/2009/random-hex-color-code-snippets/
 }
 
 Star.prototype.update = function ()
 {
     this.x += this.dx;
     this.y += this.dy;
-    this.dx *= 1.01;
-    this.dy *= 1.01;
-    this.size *= 1.005;
+    this.dx *= this.accel;
+    this.dy *= this.accel;
+    this.size *= this.accel;
 
     if ( Math.abs(this.x) > canvas.width / 2 || Math.abs(this.y) > canvas.height / 2 )
     {
