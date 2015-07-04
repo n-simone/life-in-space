@@ -15,6 +15,7 @@ function Star (x, y, color)
     this.size = 1;
     this.color = color;
     this.accel = 0.005;
+    this.iframes = 10;
     this.init();
 }
 
@@ -45,10 +46,12 @@ Star.prototype.kill = function ()
 
 Star.prototype.check_collision = function ()
 {
-    for (i = 0; i < stars.length; i++)
+    for (j = 0; j < stars.length; j++)
     {
-        if (distance(this, stars[i]) < this.size + stars[i].size)
+        if (stars[j] !== this && this.iframes == 0 && stars[j].iframes == 0 && distance(this, stars[j]) < this.size + stars[j].size)
         {
+            this.iframes = 10;
+            stars[j].iframes = 10;
             this.mate(stars[i]);
         }
     }
@@ -56,23 +59,25 @@ Star.prototype.check_collision = function ()
 
 Star.prototype.mate = function (star)
 {
-    var color = "#FFFFFF";
-    for (i = 1; i < 7; i++)
+    var color = ["#",];
+    
+    for (k = 1; k < 7; k++)
     {
         if (Math.random() > .5)
         {
-            color[i] = this.color[i];
+            color[k] = this.color.charAt(k);
         }
         else
         {
-            color[i] = star.color[i];
+            color[k] = star.color.charAt(k);
         }
-        if (Math.random() > .05)
+        if (Math.random() < .05)
         {
-            color[i] = Math.floor(Math.random()*16).toString(16);
+            color[k] = Math.floor(Math.random()*16).toString(16);
         }
     }
-    stars.push(new Star(this.x, this.y, color));
+    console.log(color.join(""));
+    stars.push(new Star(this.x, this.y, color.join("")));
 }
 
 Star.prototype.update = function ()
@@ -83,20 +88,16 @@ Star.prototype.update = function ()
     this.dy *= 1 + this.accel;
     this.size *= 1 + this.accel;
 
+    if (this.iframes > 0)
+    {
+        this.iframes --;
+    }
+
     // leaving screen //
     if ( Math.abs(this.x) > canvas.width / 2 || Math.abs(this.y) > canvas.height / 2 )
     {
         this.kill();
     }
-
-   // this.check_collision();
-
-    /*if ( this.size > 3 )
-    {
-        
-        stars.push(new Star(this.x, this.y));
-        this.init();
-    }*/
 };
 
 Star.prototype.draw = function ()
@@ -122,6 +123,7 @@ function update()
     for (i = 0; i < stars.length; i++)
     {
         stars[i].update();
+        stars[i].check_collision();
         stars[i].draw();
     }
 }
