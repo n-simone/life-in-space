@@ -1,6 +1,8 @@
 var canvas = document.getElementById("Canvas");
 var ctx = canvas.getContext("2d");
 
+var G = 10;
+
 function distance(star1, star2)
 {
     return Math.sqrt(Math.pow(star1.x - star2.x, 2) + Math.pow(star1.y - star2.y, 2));
@@ -46,13 +48,31 @@ Star.prototype.kill = function ()
 
 Star.prototype.check_collision = function ()
 {
+    var dist = 0;
+    var gravity = 0;
+    var rx = 0;
+    var ry = 0;
     for (j = 0; j < stars.length; j++)
     {
-        if (stars[j] !== this && this.iframes == 0 && stars[j].iframes == 0 && distance(this, stars[j]) < this.size + stars[j].size)
+        if (stars[j] !== this && this.iframes == 0 && stars[j].iframes == 0)
         {
-            this.iframes = 10;
-            stars[j].iframes = 10;
-            this.mate(stars[i]);
+            dist = distance(this, stars[j]);
+            if (dist < this.size + stars[j].size)
+            {
+                this.iframes = 10;
+                stars[j].iframes = 10;
+                this.mate(stars[j]);
+            }
+            
+            if (this.size > 5)
+            {
+                // gravity
+                rx = (this.x - stars[j].x) / dist;
+                ry = (this.y - stars[j].y) / dist;
+                gravity = G * stars[j].size / Math.pow(dist, 2);
+                this.dx += gravity * -rx;
+                this.dy += gravity * -ry;
+            }
         }
     }
 }
@@ -76,7 +96,6 @@ Star.prototype.mate = function (star)
             color[k] = Math.floor(Math.random()*16).toString(16);
         }
     }
-    console.log(color.join(""));
     stars.push(new Star(this.x, this.y, color.join("")));
 }
 
@@ -84,8 +103,8 @@ Star.prototype.update = function ()
 {
     this.x += this.dx;
     this.y += this.dy;
-    this.dx *= 1 + this.accel;
-    this.dy *= 1 + this.accel;
+    //this.dx *= 1 + this.accel;
+    //this.dy *= 1 + this.accel;
     this.size *= 1 + this.accel;
 
     if (this.iframes > 0)
@@ -95,6 +114,12 @@ Star.prototype.update = function ()
 
     // leaving screen //
     if ( Math.abs(this.x) > canvas.width / 2 || Math.abs(this.y) > canvas.height / 2 )
+    {
+        this.dx = -this.dx;
+        this.dy = -this.dy;
+    }
+    
+    if (stars.length * this.size > 1000)
     {
         this.kill();
     }
@@ -132,7 +157,7 @@ ctx.canvas.width  = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
 
-var num = 50;
+var num = 10;
 var stars = [];
 for (i = 0; i < num; i++)
 {
