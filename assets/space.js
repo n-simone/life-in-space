@@ -8,6 +8,17 @@ function distance(star1, star2)
     return Math.sqrt(Math.pow(star1.x - star2.x, 2) + Math.pow(star1.y - star2.y, 2));
 }
 
+function color_diff(color1, color2)
+{
+    var i,
+        d = 0;
+    for (i = 1; i < 7; i++)
+    {
+        d += Math.pow(color1.charCodeAt(i) - color2.charCodeAt(i), 2);
+    }
+    return Math.sqrt(d) / 132.2724461102916;
+}
+
 function Star (x, y, color) 
 {
     this.x = x;
@@ -52,26 +63,32 @@ Star.prototype.check_collision = function ()
     var gravity = 0;
     var rx = 0;
     var ry = 0;
-    for (j = 0; j < stars.length; j++)
+    var i;
+    for (i = 0; i < stars.length; i++)
     {
-        if (stars[j] !== this && this.iframes == 0 && stars[j].iframes == 0)
+        if (stars[i] !== this && this.iframes == 0 && stars[i].iframes == 0)
         {
-            dist = distance(this, stars[j]);
-            if (dist < this.size + stars[j].size)
+            dist = distance(this, stars[i]);
+            if (dist < this.size + stars[i].size)
             {
                 this.iframes = 10;
-                stars[j].iframes = 10;
-                this.mate(stars[j]);
+                stars[i].iframes = 10;
+                this.mate(stars[i]);
             }
             
-            if (this.size > 5)
+            if (this.size > 1)
             {
                 // gravity
-                rx = (this.x - stars[j].x) / dist;
-                ry = (this.y - stars[j].y) / dist;
-                gravity = G * stars[j].size / Math.pow(dist, 2);
+                rx = (this.x - stars[i].x) / dist;
+                ry = (this.y - stars[i].y) / dist;
+                gravity = G * stars[i].size / Math.pow(dist, 2);
                 this.dx += gravity * -rx;
                 this.dy += gravity * -ry;
+                
+                // reverse gravity
+                gravity = 40 * G * stars[i].size / Math.pow(dist, 4);
+                this.dx += gravity * rx;
+                this.dy += gravity * ry;
             }
         }
     }
@@ -80,20 +97,21 @@ Star.prototype.check_collision = function ()
 Star.prototype.mate = function (star)
 {
     var color = ["#",];
+    var i;
     
-    for (k = 1; k < 7; k++)
+    for (i = 1; i < 7; i++)
     {
         if (Math.random() > .5)
         {
-            color[k] = this.color.charAt(k);
+            color[i] = this.color.charAt(i);
         }
         else
         {
-            color[k] = star.color.charAt(k);
+            color[i] = star.color.charAt(i);
         }
         if (Math.random() < .05)
         {
-            color[k] = Math.floor(Math.random()*16).toString(16);
+            color[i] = Math.floor(Math.random()*16).toString(16);
         }
     }
     stars.push(new Star(this.x, this.y, color.join("")));
@@ -109,12 +127,17 @@ Star.prototype.update = function ()
 
     if (this.iframes > 0)
     {
+        if (this.size > 1)
+        {
+            this.size --;
+        }
         this.iframes --;
     }
 
     // leaving screen //
     if ( Math.abs(this.x) > canvas.width / 2 || Math.abs(this.y) > canvas.height / 2 )
     {
+        this.kill();
         this.dx = -this.dx;
         this.dy = -this.dy;
     }
@@ -144,7 +167,7 @@ function update()
     ctx.globalAlpha = 1;
     ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
     ctx.fillRect(-canvas.width / 2, -canvas.height / 2, canvas.width, canvas.height);
-
+    var i;
     for (i = 0; i < stars.length; i++)
     {
         stars[i].update();
@@ -157,8 +180,9 @@ ctx.canvas.width  = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
 
-var num = 10;
+var num = 1000;
 var stars = [];
+var i;
 for (i = 0; i < num; i++)
 {
     stars.push(new Star());
