@@ -34,7 +34,7 @@ function Star (x, y, color)
     this.size = 1;
     this.color = color;
     this.accel = 0.005;
-    //this.iframes = 10;
+    this.iframes = 10;
     this.init();
 }
 
@@ -50,7 +50,7 @@ Star.prototype.init = function ()
     this.size = 3;
     if ( this.color == undefined )
     {
-        this.color = '#FFFFFF'; // '#'+Math.floor(Math.random()*16777215).toString(16); // beautiul random color value code from http://www.paulirish.com/2009/random-hex-color-code-snippets/
+        this.color = '#'+Math.floor(Math.random()*16777215).toString(16); // beautiul random color value code from http://www.paulirish.com/2009/random-hex-color-code-snippets/
     }
 }
 
@@ -72,9 +72,17 @@ Star.prototype.check_collision = function ()
     var i;
     for (i = 0; i < stars.length; i++)
     {
-        if (stars[i] !== this /*&& this.iframes == 0 && stars[i].iframes == 0*/)
+        if (stars[i] !== this && this.iframes == 0 && stars[i].iframes == 0)
         {
             dist = distance(this, stars[i]);
+
+            /*
+            if (dist < stars[i].size + this.size)
+            {
+                this.iframes = 1;
+                stars[i].iframes = 1;
+            }
+            */
 
             // gravity
             rx = (this.x - stars[i].x) / dist;
@@ -126,16 +134,10 @@ Star.prototype.update = function ()
     //this.dy *= 1 + this.accel;
     //this.size *= 1 + this.accel;
     
-    /*
     if (this.iframes > 0)
     {
-        if (this.size > 1)
-        {
-            this.size --;
-        }
         this.iframes --;
     }
-    */
 
     // leaving screen //
     if ( Math.abs(this.x) > canvas.width / 2 || Math.abs(this.y) > canvas.height / 2 )

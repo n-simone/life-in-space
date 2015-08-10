@@ -1,2 +1,5 @@
 - [x] try making gravity proportional to speed instead of mass - not helpful
 - [x] or try setting a max speed
+- [x] increase iframes on collision - 10 = sparse blob in center, 1 = dense blob in center, 0 = many stars
+- [x] try adding to iframes on each collision (even during iframes) - nah
+- [ ] make similar hues attract and different hues repel
