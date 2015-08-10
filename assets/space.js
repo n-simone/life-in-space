@@ -1,7 +1,7 @@
 var canvas = document.getElementById("Canvas");
 var ctx = canvas.getContext("2d");
 
-var G = 10;
+var G = 50;
 var C = 3;
 
 function distance(star1, star2)
@@ -187,7 +187,7 @@ ctx.canvas.width  = window.innerWidth;
 ctx.canvas.height = window.innerHeight;
 ctx.translate(ctx.canvas.width / 2, ctx.canvas.height / 2);
 
-var num = 1000;
+var num = 200;
 var stars = [];
 var i;
 for (i = 0; i < num; i++)
