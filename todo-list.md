@@ -1,2 +1,2 @@
-- [ ] try making gravity proportional to speed instead of mass
-- [ ] or try setting a max speed
+- [x] try making gravity proportional to speed instead of mass - not helpful
+- [x] or try setting a max speed

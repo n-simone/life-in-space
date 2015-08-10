@@ -2,10 +2,16 @@ var canvas = document.getElementById("Canvas");
 var ctx = canvas.getContext("2d");
 
 var G = 10;
+var C = 3;
 
 function distance(star1, star2)
 {
     return Math.sqrt(Math.pow(star1.x - star2.x, 2) + Math.pow(star1.y - star2.y, 2));
+}
+
+function speed(star)
+{
+    return Math.sqrt(Math.pow(star.dx, 2) + Math.pow(star.dy, 2));
 }
 
 function color_diff(color1, color2)
@@ -28,7 +34,7 @@ function Star (x, y, color)
     this.size = 1;
     this.color = color;
     this.accel = 0.005;
-    this.iframes = 10;
+    //this.iframes = 10;
     this.init();
 }
 
@@ -41,7 +47,7 @@ Star.prototype.init = function ()
     //var dist = Math.sqrt(Math.pow(this.y, 2) + Math.pow(this.x, 2));
     this.dx = Math.random() - .5; // this.x / dist;
     this.dy = Math.random() - .5; // this.y / dist;
-    this.size = .5;
+    this.size = 3;
     if ( this.color == undefined )
     {
         this.color = '#FFFFFF'; // '#'+Math.floor(Math.random()*16777215).toString(16); // beautiul random color value code from http://www.paulirish.com/2009/random-hex-color-code-snippets/
@@ -66,30 +72,17 @@ Star.prototype.check_collision = function ()
     var i;
     for (i = 0; i < stars.length; i++)
     {
-        if (stars[i] !== this && this.iframes == 0 && stars[i].iframes == 0)
+        if (stars[i] !== this /*&& this.iframes == 0 && stars[i].iframes == 0*/)
         {
             dist = distance(this, stars[i]);
-            if (dist < this.size + stars[i].size)
-            {
-                this.iframes = 10;
-                stars[i].iframes = 10;
-                this.mate(stars[i]);
-            }
-            
-            if (this.size > 1)
-            {
-                // gravity
-                rx = (this.x - stars[i].x) / dist;
-                ry = (this.y - stars[i].y) / dist;
-                gravity = G * stars[i].size / Math.pow(dist, 2);
-                this.dx += gravity * -rx;
-                this.dy += gravity * -ry;
-                
-                // reverse gravity
-                gravity = 40 * G * stars[i].size / Math.pow(dist, 4);
-                this.dx += gravity * rx;
-                this.dy += gravity * ry;
-            }
+
+            // gravity
+            rx = (this.x - stars[i].x) / dist;
+            ry = (this.y - stars[i].y) / dist;
+            gravity = G * stars[i].size / Math.pow(dist, 2) / speed(this);
+            this.dx += gravity * -rx;
+            this.dy += gravity * -ry;
+
         }
     }
 }
@@ -119,12 +112,21 @@ Star.prototype.mate = function (star)
 
 Star.prototype.update = function ()
 {
+    s = speed(this);
+    if (s > C)
+    {
+        this.dx = this.dx / s * C;
+        this.dy = this.dy / s * C;
+    }
+
     this.x += this.dx;
     this.y += this.dy;
+    
     //this.dx *= 1 + this.accel;
     //this.dy *= 1 + this.accel;
-    this.size *= 1 + this.accel;
-
+    //this.size *= 1 + this.accel;
+    
+    /*
     if (this.iframes > 0)
     {
         if (this.size > 1)
@@ -133,6 +135,7 @@ Star.prototype.update = function ()
         }
         this.iframes --;
     }
+    */
 
     // leaving screen //
     if ( Math.abs(this.x) > canvas.width / 2 || Math.abs(this.y) > canvas.height / 2 )
@@ -142,10 +145,12 @@ Star.prototype.update = function ()
         this.dy = -this.dy;
     }
     
+    /*
     if (stars.length * this.size > 1000)
     {
         this.kill();
     }
+    */
 };
 
 Star.prototype.draw = function ()
