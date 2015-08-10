@@ -1,8 +1,8 @@
 var canvas = document.getElementById("Canvas");
 var ctx = canvas.getContext("2d");
 
-var G = 20;
-var C = 3;
+var G = 90;
+var C = 2;
 
 function distance(star1, star2)
 {
@@ -76,16 +76,22 @@ Star.prototype.check_collision = function ()
         {
             dist = distance(this, stars[i]);
 
-            if (dist < stars[i].size + this.size)
-            {
-                this.dx = -this.dx;
-                this.dy = -this.dy;
-            }
-
             // gravity
             rx = (this.x - stars[i].x) / dist;
             ry = (this.y - stars[i].y) / dist;
             gravity = G * stars[i].size / Math.pow(dist, 2) / speed(this);
+
+            // repels if touching
+            if (dist < stars[i].size + this.size)
+            {
+                // and bounce
+                this.dx = -this.dx;
+                this.dy = -this.dy;
+
+                rx = -rx;
+                ry = -ry;
+            }
+
             this.dx += gravity * -rx;
             this.dy += gravity * -ry;
 
@@ -140,9 +146,8 @@ Star.prototype.update = function ()
     // leaving screen //
     if ( Math.abs(this.x) > canvas.width / 2 || Math.abs(this.y) > canvas.height / 2 )
     {
-        this.kill();
-        this.dx = -this.dx;
-        this.dy = -this.dy;
+        this.x = -this.x;
+        this.y = -this.y;
     }
     
     /*
