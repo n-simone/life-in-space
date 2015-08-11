@@ -2,4 +2,5 @@
 - [x] or try setting a max speed
 - [x] increase iframes on collision - 10 = sparse blob in center, 1 = dense blob in center, 0 = many stars
 - [x] try adding to iframes on each collision (even during iframes) - nah
+- [x] remove bounce and add a much stronger repulsion on contact - tried it, bounce with repulsion is better
 - [ ] make similar hues attract and different hues repel

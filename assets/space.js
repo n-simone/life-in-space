@@ -1,7 +1,9 @@
 var canvas = document.getElementById("Canvas");
 var ctx = canvas.getContext("2d");
 
+// G = 90, C = 2 produces interesting behavior //
 var G = 90;
+var E = 1000;
 var C = 2;
 
 function distance(star1, star2)
@@ -79,7 +81,6 @@ Star.prototype.check_collision = function ()
             // gravity
             rx = (this.x - stars[i].x) / dist;
             ry = (this.y - stars[i].y) / dist;
-            gravity = G * stars[i].size / Math.pow(dist, 2) / speed(this);
 
             // repels if touching
             if (dist < stars[i].size + this.size)
@@ -87,9 +88,12 @@ Star.prototype.check_collision = function ()
                 // and bounce
                 this.dx = -this.dx;
                 this.dy = -this.dy;
-
-                rx = -rx;
-                ry = -ry;
+                
+                gravity = - E / Math.pow(dist, 2) / speed(this);
+            }
+            else // attracts
+            {
+                gravity = G / Math.pow(dist, 2) / speed(this);
             }
 
             this.dx += gravity * -rx;
